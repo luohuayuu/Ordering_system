@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+
+    form {
+      max-width: 300px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 94%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    input[type="button"] {
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+    }
+
+    input[type="button"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+  <script>
+    function usercheck() {
+      // 获取用户名和密码输入框的值
+      var username = document.getElementById("username").value;
+      var password = document.getElementById("password").value;
+      // 获取是否记住我的勾选状态
+      var rememberMe = document.getElementById("rememberMe").checked;
+
+      // 使用 fetch 发送 POST 请求到服务器
+      fetch('http://localhost:3000/rootusercheck', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify({ username: username, password: password })
+      })
+        .then(response => response.json())
+        .then(data => {
+          // 根据响应结果显示提示信息
+          if (data.success) {
+            // 登录成功，保存用户信息到本地存储
+            if (rememberMe) {
+              localStorage.setItem("username", username);
+              localStorage.setItem("password", password);
+            }
+            // 跳转至 query.html 页面
+            window.location.href = 'manager.html';
+          } else {
+            alert("用户名或密码错误！");
+            // 登录失败，清除本地存储中的用户名和密码
+            localStorage.removeItem("username");
+            localStorage.removeItem("password");
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert("发生错误，请重试！");
+          // 登录失败，清除本地存储中的用户名和密码
+          localStorage.removeItem("username");
+          localStorage.removeItem("password");
+        });
+    }
+
+    // 在页面加载时，检查本地存储中是否有保存的用户名和密码
+    window.onload = function () {
+      var username = localStorage.getItem("username");
+      var password = localStorage.getItem("password");
+      if (username && password) {
+        // 如果有保存的用户名和密码，则自动填写到输入框中
+        document.getElementById("username").value = username;
+        document.getElementById("password").value = password;
+        // 勾选记住我复选框
+        document.getElementById("rememberMe").checked = true;
+      }
+    };
+  </script>
+</head>
+
+<body>
+  <h1>登录</h1>
+  <form>
+    <label for="username">用户名：</label>
+    <input type="text" id="username" name="username"><br><br>
+    <label for="password">密码：</label>
+    <input type="password" id="password" name="password"><br><br>
+    <!-- 添加记住我复选框 -->
+    <input type="checkbox" id="rememberMe" name="rememberMe">
+    <label for="rememberMe" style="display: inline-block; margin-left: 5px;">记住我</label>
+    <input type="button" value="登录" onclick="usercheck()">
+  </form>
+</body>
+
+</html>

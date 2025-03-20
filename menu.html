@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜单查看与预订</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+        }
+
+        #menu {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        #order-list {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 4px solid #ddd;
+            border-radius: 5px;
+
+        }
+
+        .menu-item:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-item img {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .menu-item div {
+            text-align: center;
+        }
+
+        .menu-item h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+        .menu-item p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .order-item button {
+            margin-left: 10px;
+        }
+
+        #total-price {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* 新增样式：横向排列菜品 */
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .menu-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .comment-area {
+            margin-left: 20px;
+        }
+
+        .comment-input {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .comment-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .comment-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>菜单查看与预订</h1>
+    <button onclick="window.location.href='主页.html'">返回主页</button>
+    <div id="container">
+        <div id="menu">
+            <!-- 这里将展示菜品信息 -->
+        </div>
+        <div id="order">
+            <h2>购物订单</h2>
+            <form id="order-form">
+                <ul id="order-list">
+                    <!-- 这里将展示购物订单中的菜品 -->
+
+                </ul>
+                <div id="total-price">总价: <span>0</span></div>
+                <label for="expected-time">预期时间：</label>
+                <input type="text" id="expected-time" name="expected-time">
+                <button type="button" onclick="submitOrder()">提交订单</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let orderList = [];
+        let menu = [];
+        let comments = []; // 新增：用于存储评论数据
+
+        const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('username');
+    console.log(studentId);  // 检查 studentId 的值
+        window.onload = async function () {
+            await fetchMenu();
+        };
+
+        // 从服务器获取菜品信息
+        async function fetchMenu() {
+            const response = await fetch('http://localhost:3000/api/menu');
+            menu = await response.json();
+            const menuDiv = document.getElementById('menu');
+            menu.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'menu-item';
+                itemDiv.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div>
+                <h3>${item.name}</h3>
+                <p>菜系: ${item.cuisine}</p>
+                <p>价格: ${item.price}</p>
+                <p>评价: ${item.comment}</p> <!-- 新增：显示评价 -->
+            </div>
+            <button onclick="addItem(${item.id})">+</button>
+            <div class="comment-area">
+                <textarea class="comment-input" placeholder="请输入您的评价"></textarea>
+                <button class="comment-btn" onclick="submitComment('${item.name}')">提交评价</button>
+            </div>
+        `;
+                itemDiv.dataset.name = item.name;
+                menuDiv.appendChild(itemDiv);
+            });
+        }
+
+        // 添加菜品到购物订单
+        function addItem(itemId) {
+            // 查找菜品信息
+            const item = menu.find(item => item.id === itemId);
+            if (item) {
+                orderList.push(item);
+                updateOrderList();
+            }
+        }
+
+        // 更新购物订单列表
+        function updateOrderList() {
+            const orderListElement = document.getElementById('order-list');
+            orderListElement.innerHTML = '';
+            let totalPrice = 0;
+            orderList.forEach((item, index) => {
+                const orderItem = document.createElement('li');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+            <span>${item.name}</span>
+            <button onclick="removeItem(${index})">x</button>
+        `;
+                orderListElement.appendChild(orderItem);
+                // 确保 item.price 是数字类型
+                totalPrice += parseFloat(item.price);
+            });
+            const totalPriceElement = document.getElementById('total-price').querySelector('span');
+            // 确保 totalPrice 是数字类型
+            totalPriceElement.textContent = totalPrice.toFixed(2);
+        }
+
+        // 移除菜品从购物订单
+        function removeItem(index) {
+            orderList.splice(index, 1);
+            updateOrderList();
+        }
+
+        // 提交订单
+        async function submitOrder() {
+    try {
+        // 提取订单中的菜品ID
+        const orderItemIds = orderList.map(item => item.id);
+        const orderItemNames=orderList.map(item=>item.name);
+        const expectedTimeInput = document.getElementById('expected-time');
+        const expectedTime = expectedTimeInput.value;
+        // 发送POST请求到服务器，提交订单
+        const response = await fetch('http://localhost:3000/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderItemIds,orderItemNames,expectedTime,studentId }) // 提交菜品ID列表
+        });
+
+        if (response.ok) {
+            alert('订单提交成功');
+            orderList = [];
+            updateOrderList();
+        } else {
+            alert('订单提交成功');
+        }
+    } catch (error) {
+        alert('订单提交出错');
+    }
+}
+
+        // 提交菜品评价
+      // 提交菜品评价
+async function submitComment(itemName) {
+    // 从评论输入框的父元素中获取 data-id 属性
+    const itemDiv = document.querySelector(`.menu-item[data-name="${itemName}"]`);
+    if (itemDiv) {
+        const commentInput = itemDiv.querySelector('.comment-input');
+        if (commentInput) {
+            const comment = commentInput.value;
+            if (comment.trim() !== '') {
+                try {
+                    const response = await fetch('http://localhost:3000/api/comment', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ itemName, comment })
+                    });
+                    if (response.ok) {
+                        alert('评价提交成功');
+                        commentInput.value = '';
+                    } else {
+                        alert('评价提交失败');
+                    }
+                } catch (error) {
+                    alert('评价提交出错');
+                }
+            }
+        }
+    } else {
+        alert('未找到对应的菜品');
+    }
+}
+
+
+    </script>
+</body>
+
+</html>

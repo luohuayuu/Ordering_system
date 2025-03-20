@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>投诉与建议</title>
+    <button onclick="window.location.href='主页.html'">返回主页</button>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>投诉与建议</h1>
+<div class="form-container">
+    <form id="feedback-form">
+        <label for="name">姓名:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">邮箱:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">投诉与建议内容:</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
+
+        <button type="submit">提交</button>
+    </form>
+    <div id="response-message" class="message"></div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000/submit-feedback';
+
+    document.getElementById('feedback-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const submitButton = event.target.querySelector('button');
+        submitButton.disabled = true; // 禁用提交按钮
+
+        const formData = new FormData(event.target);
+        const data = {
+            name: formData.get('name').trim(),
+            email: formData.get('email').trim(),
+            message: formData.get('message').trim()
+        };
+
+        // 简单的内容验证
+        if (data.message.length < 10) {
+            showMessage('投诉与建议内容太短，请补充更多细节！', 'error');
+            submitButton.disabled = false; // 恢复按钮
+            return;
+        }
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`请求失败，状态码: ${response.status}`);
+            }
+
+            const message = await response.text();
+            showMessage(message, 'success');
+            event.target.reset(); // 重置表单
+        } catch (error) {
+            console.error('提交失败:', error);
+            showMessage('提交失败，请检查网络连接并重试。', 'error');
+        } finally {
+            submitButton.disabled = false; // 恢复按钮
+        }
+    });
+
+    function showMessage(message, type) {
+        const responseMessage = document.getElementById('response-message');
+        responseMessage.textContent = message;
+        responseMessage.className = `message ${type}`;
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理员页面</title>
+  <link rel="stylesheet" href="manager.css">
+  <!-- 页面logo -->
+  <link rel="icon" href="image/计软院徽.png">
+  <style>
+    .fixed-image {
+      position: absolute;
+      left: 0;
+      top: 10px;
+      z-index: 9999;
+      width: 200px;
+    }
+
+    .form-container {
+      position: absolute;
+      height: 550px;
+      width: 600px;
+      left: 700px;
+      top: 100px;
+    }
+
+    .add-stu-class {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    input[type="text"] {
+      width: 60%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button[type="submit"],
+    [type="button"] {
+      background-color: #4CAF50;
+      /* 按钮背景颜色 */
+      margin: 10px;
+      color: white;
+      /* 字体颜色 */
+      cursor: pointer;
+      /* 鼠标指针样式 */
+      border: none;
+      /* 去掉边框 */
+      border-radius: 5px;
+      /* 圆角 */
+      padding: 10px 20px;
+      /* 内边距 */
+      font-size: 16px;
+      /* 字体大小 */
+      transition: background-color 0.3s, transform 0.3s;
+      /* 平滑过渡效果 */
+    }
+
+    #deleteButton {
+      background-color: red;
+      /* 按钮背景颜色 */
+      margin: 10px;
+      color: white;
+      /* 字体颜色 */
+      cursor: pointer;
+      /* 鼠标指针样式 */
+      border: none;
+      /* 去掉边框 */
+      border-radius: 5px;
+      /* 圆角 */
+      /* 圆角 */
+      padding: 10px 20px;
+      /* 内边距 */
+      font-size: 16px;
+      /* 字体大小 */
+      transition: background-color 0.3s, transform 0.3s;
+      /* 平滑过渡效果 */
+    }
+
+    button[type="submit"]:hover,
+    [type="button"]:hover {
+      background-color: #45a049;
+      /* 悬停时的背景颜色 */
+      transform: scale(1.05);
+      /* 悬停时放大按钮 */
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      /* 悬停时阴影效果 */
+    }
+
+    #deleteButton:hover {
+      background-color: darkred;
+      /* 悬停时的背景颜色 */
+      transform: scale(1.05);
+      /* 悬停时放大按钮 */
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      /* 悬停时阴影效果 */
+    }
+
+    /* 占据侧边栏和导航栏其他位置的灰色盒子 */
+    #logo-container {
+      position: relative;
+      height: 850px;
+      width: 100%;
+      margin: 20px;
+      background-color: #f2f2f2;
+      /* 灰色背景 */
+      border-radius: 10px;
+      /* 圆角 */
+    }
+
+    /* 表格整体样式 */
+    table {
+      width: 100%;
+      /* 表格宽度占满容器 */
+      border-collapse: collapse;
+      /* 合并边框 */
+      margin: 20px 0;
+      /* 上下边距 */
+      font-family: Arial, sans-serif;
+      /* 字体样式 */
+    }
+
+    /* 表头样式 */
+    th {
+      background-color: #d3d3d3;
+      /* 表头背景色 */
+      color: rgb(0, 0, 0);
+      /* 表头文字颜色 */
+      padding: 12px;
+      /* 内边距 */
+      text-align: left;
+      /* 左对齐 */
+      border-bottom: 2px solid #ddd;
+      /* 仅保留底部边框 */
+    }
+
+    /* 表格单元格样式 */
+    td {
+      padding: 8px;
+      /* 内边距 */
+      border-bottom: 1px solid #ddd;
+      /* 仅保留底部边框 */
+    }
+
+    /* 表格行悬停效果 */
+    tr:hover {
+      background-color: rgb(209, 239, 249);
+      /* 鼠标悬停时的背景色 */
+    }
+
+    #main-image {
+      position: absolute;
+      z-index: 9999;
+      width: 400px;
+      /* background-color: black; */
+      /* 居中显示 */
+      left: 50%;
+      /* 左边距为50% */
+      top: 50%;
+      /* 上边距为50% */
+      transform: translate(-30%, -50%);
+    }
+
+    #main-title {
+      position: absolute;
+      z-index: 9999;
+      font-size: 50px;
+      /* 字体大小 */
+      color: rgb(45, 91, 183);
+      /* 字体颜色 */
+      left: 50%;
+      /* 左边距为50% */
+      top: 75%;
+      transform: translate(-30%, -50%);
+    }
+
+    * {
+      transition: background-color 0.5s ease;
+      /* 添加背景色渐变效果，持续时间为 0.3 秒 */
+    }
+  </style>
+</head>
+
+<body>
+  <img src="image\计软院徽.png" alt="Image" id="main-image">
+  <h1 id="main-title">点餐预约后台系统</h1>
+  <div class="navbar"></div>
+  <div class="main-content">
+    <div class="sidebar">
+      <a href="#" class="student-info">学生信息</a>
+      <a href="#" class="dish-info">菜品信息</a>
+      <a href="#" class="comment-suggestion">评论</a>
+      <a href="#" class="order-info">订单统计</a>
+    </div>
+    <img src="image\szu.png" alt="Fixed Image" class="fixed-image">
+    <div class="header">
+      <span>个人中心</span>
+      <div class="dropdown">
+        <a href="#" id="logout">退出账号</a>
+        <a href="#" id="change-password">修改密码</a>
+      </div>
+    </div>
+    <div id="logo-container">
+      <div class="container" id="content-container">
+        <h1 id="student-title">学生信息管理</h1>
+        <input type="text" id="searchstuInput" placeholder="搜索学生信息..." onkeyup="searchTable()">
+        <table id="student-table">
+          <thead>
+            <tr>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>班级</th>
+              <th>学号</th>
+              <th>身份证号</th>
+              <th>电话</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 这里将通过 JavaScript 动态添加学生信息 -->
+          </tbody>
+        </table>
+        <a href="#" class="add-btn" id="add-student-btn">添加学生</a>
+
+        <!-- 菜品信息表格 -->
+        <h1 id="dish-title">菜品信息管理</h1>
+        <input type="text" id="searchdishInput" placeholder="搜索菜品信息..." onkeyup="searchTable()">
+        <table id="dish-table">
+          <thead>
+            <tr>
+              <th>菜品名称</th>
+              <th>分类</th>
+              <th>价格</th>
+              <th>图片</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 这里将通过 JavaScript 动态添加菜品信息 -->
+          </tbody>
+        </table>
+        <a href="#" class="add-btn" id="add-dish-btn">添加菜品</a>
+        <!-- 评价信息表格 -->
+        <h1 id="comment-title">评论信息管理</h1>
+        <input type="text" id="searchcommentInput" placeholder="搜索评论..." onkeyup="searchTable()">
+        <table id="comment-table">
+          <thead>
+            <tr>
+              <th>评论序号</th>
+              <th>菜品名称</th>
+              <th>评价</th>
+              <th>评论时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 这里将通过 JavaScript 动态添加菜品信息 -->
+          </tbody>
+        </table>
+
+        <h1 id="order-title">订单统计</h1>
+        <table id="order-table">
+          <thead>
+            <tr>
+              <th>菜品序号</th>
+              <th>菜品名称</th>
+              <!-- 获取当前系统时间并显示 -->
+              <th>
+                <script>
+                  function getCurrentDate(days) {
+                    // 获取当前系统时间并将其增加days天后输出“月.日”
+                    const date = new Date();
+                    date.setDate(date.getDate() + days);
+                    const year = date.getFullYear();
+                    const month = date.getMonth() + 1;
+                    const day = date.getDate();
+                    return `${year}.${month}.${day}`;
+                  }
+                  //使用函数显示明天日期
+                  document.write(getCurrentDate(1));
+                </script>
+              </th>
+              <!-- // 显示后天日期 -->
+              <th>
+                <script>document.write(getCurrentDate(2))</script>
+              </th>
+              <!-- // 显示大后天日期 -->
+              <th>
+                <script>document.write(getCurrentDate(3))</script>
+              </th>
+
+              <th>
+                <script>document.write(getCurrentDate(4))</script>
+              </th>
+
+              <th>
+                <script>document.write(getCurrentDate(5))</script>
+              </th>
+
+              <th>
+                <script>document.write(getCurrentDate(6))</script>
+              </th>
+              <th>
+                <script>document.write(getCurrentDate(7))</script>
+              </th>
+              <th>订单总数</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 这里将通过 JavaScript 动态添加菜品信息 -->
+          </tbody>
+        </table>
+
+
+
+      </div>
+    </div>
+  </div>
+  <script>
+    function init_hide_all() {
+      document.getElementById('student-title').style.display = 'none';
+      document.getElementById('student-table').style.display = 'none';
+      document.getElementById('add-student-btn').style.display = 'none';
+      document.getElementById('dish-title').style.display = 'none';
+      document.getElementById('dish-table').style.display = 'none';
+      document.getElementById('add-dish-btn').style.display = 'none';
+      document.getElementById('comment-title').style.display = 'none';
+      document.getElementById('comment-table').style.display = 'none';
+      document.getElementById('searchstuInput').style.display = 'none';
+      document.getElementById('searchdishInput').style.display = 'none';
+      document.getElementById('searchcommentInput').style.display = 'none';
+      document.getElementById('main-title').style.display = 'none';
+      document.getElementById('main-image').style.display = 'none';
+      document.getElementById('order-title').style.display = 'none';
+      document.getElementById('order-table').style.display = 'none';
+    }
+
+    function searchTable(searchInput, tableId) {
+      // 获取输入框的值
+      const input = document.getElementById(searchInput);
+      const filter = input.value.toLowerCase(); // 将输入的值转换为小写
+      const table = document.getElementById(tableId);
+      const tr = table.getElementsByTagName('tr'); // 获取所有行
+
+      // 遍历所有行，隐藏不符合条件的行
+      for (let i = 1; i < tr.length; i++) { // 从 1 开始，跳过表头
+        const td = tr[i].getElementsByTagName('td'); // 获取当前行的所有单元格
+        let rowVisible = false; // 标记当前行是否可见
+
+        // 遍历当前行的所有单元格
+        for (let j = 0; j < td.length; j++) {
+          if (td[j]) {
+            const txtValue = td[j].textContent || td[j].innerText; // 获取单元格的文本内容
+            if (txtValue.toLowerCase().indexOf(filter) > -1) { // 检查是否包含搜索内容
+              rowVisible = true; // 如果找到匹配项，标记为可见
+              break; // 找到后不再检查其他单元格
+            }
+          }
+        }
+
+        // 根据是否找到匹配项来显示或隐藏行
+        tr[i].style.display = rowVisible ? "" : "none";
+      }
+    }
+
+    // 绑定搜索功能到输入框
+    document.getElementById('searchstuInput').addEventListener('keyup', function () {
+      searchTable('searchstuInput', 'student-table'); // 调用搜索函数，传入表格 ID
+    });
+    document.getElementById('searchdishInput').addEventListener('keyup', function () {
+      searchTable('searchdishInput', 'dish-table'); // 调用搜索函数，传入表格 ID
+    });
+    document.getElementById('searchcommentInput').addEventListener('keyup', function () {
+      searchTable('searchcommentInput', 'comment-table'); // 调用搜索函数，传入表格 ID
+    });
+  </script>
+  <script>
+    const studentFormbackground = document.createElement('button');
+
+    // 设置按钮的样式，使其占据整个屏幕
+    studentFormbackground.style.position = 'fixed';  // 使用固定定位
+    studentFormbackground.style.top = '0';           // 距离页面顶部 0px
+    studentFormbackground.style.left = '0';          // 距离页面左侧 0px
+    studentFormbackground.style.width = '100000px';     // 宽度为视口宽度
+    studentFormbackground.style.height = '1000000px';    // 高度为视口高度
+    studentFormbackground.style.backgroundColor = 'rgba(1, 0, 0, 0.5)'; // 半透明黑色背景
+    studentFormbackground.style.border = 'none';    // 去除按钮边框
+    studentFormbackground.style.cursor = 'pointer'; // 鼠标悬停时为指针样式
+    studentFormbackground.style.zIndex = '9999';    // 确保按钮位于页面最上层
+    document.body.appendChild(studentFormbackground);  // 首先将按钮添加到页面
+    studentFormbackground.style.display = 'none';
+  </script>
+  <script>
+    //初始化隐藏！！！！！！！！！！！！！！！！！！！！！！！！！！
+    init_hide_all();
+
+    document.getElementById('main-title').style.display = 'block';
+    document.getElementById('main-image').style.display = 'block';
+
+    // 个人中心功能
+    document.getElementById('logout').addEventListener('click', function () {
+      window.location.href = 'rootlogin.html';
+    });
+
+    document.getElementById('change-password').addEventListener('click', function () {
+      alert('暂不支持修改');
+    });
+
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', function (event) {
+        event.preventDefault(); // 阻止链接默认跳转行为
+        const target = this.getAttribute('class').split('-')[0]; // 获取链接的目标内容
+        console.log(link); // 这将在控制台中打印出每个链接
+        console.log(target);
+        // 重置所有元素为隐藏
+        init_hide_all();
+
+        if (target === 'dish') {
+          console.log("菜品信息表已展示"); // 在控制台输出信息
+
+          init_hide_all();
+
+          // 显示菜品信息表格和标题
+          document.getElementById('dish-title').style.display = 'block';
+          document.getElementById('dish-table').style.display = 'table'; // 表格使用table
+          document.getElementById('add-dish-btn').style.display = 'block';
+          document.getElementById('searchdishInput').style.display = 'block';
+
+          // 获取菜品信息并展示
+          fetch('http://localhost:3000/getdishmessage')
+            .then(response => response.json())
+            .then(data => {
+              const dishTableBody = document.getElementById('dish-table').getElementsByTagName('tbody')[0];
+              dishTableBody.innerHTML = ''; // 清空之前的内容
+              data.forEach(dish => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+              <td>${dish.name}</td>
+              <td>${dish.cuisine}</td>
+              <td>${dish.price}</td>
+              <td>
+                  <button class="check-btn" data-id="${dish.image}">查看图片</button>
+              </td>
+              <td>
+                  <button class="edit-btn" data-id="${dish.id}">详情</button>
+              </td>
+          `;
+                //获取“详情”按钮中的数据
+                row.querySelector('.edit-btn').addEventListener('click', function () {
+                  const dishId = this.getAttribute('data-id');
+                  console.log(dishId);
+                  //创建一个置顶表单，用于显示菜品详细信息
+                  // 检查是否已经存在表单
+                  const existingForm = document.querySelector('form');
+                  if (existingForm) {
+                    document.body.removeChild(existingForm);
+                  }
+
+                  const dishForm = document.createElement('form');
+                  dishForm.className = 'form-container'; // 添加类名以应用样式
+                  studentFormbackground.style.display = 'block';
+                  dishForm.style.zIndex = '10000'; // 确保表单位于按钮上方
+                  dishForm.innerHTML = `
+          <label for="name">菜品名称:</label>
+          <input type="text" id="name" name="name" required style="width : 100px" value="${dish.name}"><br> 
+          <label for="id">菜品ID:</label>
+          <input type="text" id="dishId" name="dishId" required value="${dish.id}"><br>
+          <label for="cuisine">分类:</label>
+          <input type="text" id="cuisine" name="cuisine" required value="${dish.cuisine}"><br>
+          <label for="price">价格:</label>
+          <input type="text" id="price" name="price" required value="${dish.price}"><br>
+          <label for="image">图片地址:</label>
+          <input type="text" id="image" name="image" required value=${dish.image}><br>          
+          <button type="submit">修改</button>
+          <button type="button" id="deleteButton">删除</button>
+          <button type="button" id="closeButton">返回</button>
+          
+      `;
+
+                  const closeButton = dishForm.querySelector('#closeButton');
+                  closeButton.addEventListener('click', () => {
+                    studentFormbackground.style.display = 'none'; // 隐藏按钮
+                    document.body.removeChild(dishForm); // 从 DOM 中移除表单
+                  });
+
+                  // 点击按钮时关闭它
+                  studentFormbackground.addEventListener('click', () => {
+                    studentFormbackground.style.display = 'none'; // 隐藏按钮
+                    document.body.removeChild(dishForm); // 从 DOM 中移除表单
+                  });
+
+                  const deleteButton = dishForm.querySelector('#deleteButton');
+                  deleteButton.addEventListener('click', () => {
+                    fetch(`http://localhost:3000/deletedishmessage/${dish.id}`, {
+                      method: 'DELETE'
+                    })
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                      })
+                      .then(data => {
+                        console.log('Success:', data);
+                        alert('删除成功!');
+                      })
+                      .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Failed to delete dish information.');
+                      });
+                  });
+
+                  dishForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // 阻止表单默认提交行为
+                    const formData = new FormData(dishForm);
+                    const updatedData = {};
+                    formData.forEach((value, key) => {
+                      updatedData[key] = value;
+                    });
+
+                    fetch(`http://localhost:3000/updatedishmessage`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(updatedData)
+                    })
+                      .then(response => {
+                        console.log("响应状态：", response.status); // 查看状态码
+                        return response.text(); // 获取响应的原始文本
+                      })
+                      .then(data => {
+                        try {
+                          const jsonData = JSON.parse(data); // 尝试解析为 JSON
+                          console.log('Success:', jsonData);
+                          alert('更新成功！');
+                        } catch (error) {
+                          console.error('testtesttest');
+                          console.error('解析失败:', error);
+                          console.error('响应内容:', data); // 打印出原始响应内容
+                          alert('更新失败！');
+                        }
+                      })
+                      .catch(error => {
+                        console.error('Error:', error);
+                        alert('更新失败！');
+                      });
+                  });
+                  document.body.appendChild(dishForm);
+
+                });
+                dishTableBody.appendChild(row);
+                // 获取“查看图片”按钮中的数据
+                row.querySelector('.check-btn').addEventListener('click', function () {
+                  const dishWeb = this.getAttribute('data-id'); // 获取菜品ID
+                  console.log(dishWeb);
+                  window.open(dishWeb, '_blank'); // 打开一个新的浏览器窗口或标签页
+
+                });
+
+
+              });
+            })
+            .catch(error => {
+              console.error('获取菜品信息失败:', error);
+            });
+          // 为查看图片按钮添加点击事件监听器
+          document.querySelectorAll('.view-image-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+              event.preventDefault(); // 阻止默认行为
+              const imageUrl = button.getAttribute('data-image');
+              window.open(imageUrl, '_blank'); // 打开一个新的浏览器窗口或标签页
+            });
+          });
+
+          // 添加菜品按钮点击事件
+          document.getElementById('add-dish-btn').addEventListener('click', () => {
+            // 检查是否已经存在表单
+            const existingForm = document.querySelector('form');
+            if (existingForm) {
+              document.body.removeChild(existingForm);
+            }
+
+            const dishForm = document.createElement('form');
+            dishForm.className = 'form-container'; // 添加类名以应用样式
+            studentFormbackground.style.display = 'block';
+
+            dishForm.style.zIndex = '10000'; // 确保表单位于按钮上方
+            dishForm.innerHTML = `
+                  <label for="name">菜品名称:</label>
+                  <input type="text" id="name" name="name" required style="width : 20px"><br> 
+                  <label for="id">菜品ID:</label>
+                  <input type="text" id="dishId" name="dishId" required><br>
+                  <label for="cuisine">分类:</label>
+                  <input type="text" id="cuisine" name="cuisine" required><br>
+                  <label for="price">价格:</label>
+                  <input type="text" id="price" name="price" required><br>
+                  <label for="image">图片地址:</label>
+                  <input type="text" id="image" name="image" required><br>          
+                  <button type="submit">提交</button>
+                  <button type="button" id="closeButton">取消</button>
+                  
+              `;
+
+            const closeButton = dishForm.querySelector('#closeButton');
+            closeButton.addEventListener('click', () => {
+              studentFormbackground.style.display = 'none'; // 隐藏按钮
+              document.body.removeChild(dishForm); // 从 DOM 中移除表单
+            });
+
+            // 点击按钮时关闭它
+            studentFormbackground.addEventListener('click', () => {
+              studentFormbackground.style.display = 'none'; // 隐藏按钮
+              document.body.removeChild(dishForm); // 从 DOM 中移除表单
+            });
+
+            dishForm.addEventListener('submit', (event) => {
+              event.preventDefault(); // 阻止表单默认提交行为
+              const formData = new FormData(dishForm);
+              const dishData = {};
+              formData.forEach((value, key) => {
+                dishData[key] = value;
+              });
+
+              fetch('http://localhost:3000/newdishmessage', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dishData)
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('菜品信息添加成功:', data);
+                  studentFormbackground.style.display = 'none'; // 隐藏按钮
+                  document.body.removeChild(dishForm);
+                  alert('菜品信息提交成功！');
+
+                })
+                .catch(error => {
+                  console.error('添加菜品信息失败:', error);
+                  alert('菜品信息提交失败，请重试！');
+                });
+            });
+            document.body.appendChild(dishForm);
+          });
+
+        }
+
+
+
+
+
+
+        else if (target === 'student') {
+          init_hide_all();
+
+
+          // 显示学生信息表格
+          document.getElementById('student-table').style.display = 'table';
+          document.getElementById('add-student-btn').style.display = 'block';
+          document.getElementById('student-title').style.display = 'block';
+          document.getElementById('searchstuInput').style.display = 'block';
+
+          // 清空之前的学生信息表格内容
+          const dishTableBody = document.getElementById('student-table').getElementsByTagName('tbody')[0];
+          dishTableBody.innerHTML = ''; // 清空之前的内容
+
+          // 获取学生信息并展示
+          fetch('http://localhost:3000/getstumessage')
+            .then(response => response.json())
+            .then(data => {
+              const studentTableBody = document.getElementById('student-table').getElementsByTagName('tbody')[0];
+              data.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.class}</td>
+                        <td>${student.studentId}</td>
+                        <td>${student.idNumber}</td>
+                        <td>${student.phone}</td>
+                        <td>
+                            <button class="edit-btn" data-id="${student.studentId}">详情</button>
+                        </td>
+                    `;
+
+                //获取“详情”按钮中的数据
+                row.querySelector('.edit-btn').addEventListener('click', function () {
+                  const studentId = this.getAttribute('data-id');
+                  console.log(studentId);
+                  //创建一个置顶表单，用于显示学生详细信息
+                  // 检查是否已经存在表单
+                  const existingForm = document.querySelector('form');
+                  if (existingForm) {
+                    document.body.removeChild(existingForm);
+                  }
+
+                  const studentForm = document.createElement('form');
+                  studentForm.className = 'form-container'; // 添加类名以应用样式
+                  studentFormbackground.style.display = 'block';
+                  studentForm.style.zIndex = '10000'; // 确保表单位于按钮上方
+                  studentForm.innerHTML = `
+                          <label for="name">姓名:</label>
+                          <input type="text" id="name" name="name" required style="width = 20px" value="${student.name}"><br>
+                          <label for="gender">性别:</label>
+                          <div class="radio-group">
+                            <label>
+                              <input type="radio" name="gender" value="男" required ${student.gender === '男' ? 'checked' : ''}> 男
+                              <input type="radio" name="gender" value="女" required ${student.gender === '女' ? 'checked' : ''}> 女
+                            </label>
+                          </div>
+                          <label for="class">班级:
+                          <select id="add-stu-class" name="class" required>
+                          <option value="01" ${student.class === '01' ? 'selected' : ''}>01</option>
+                          <option value="02" ${student.class === '02' ? 'selected' : ''}>02</option>
+                          <option value="03" ${student.class === '03' ? 'selected' : ''}>03</option>
+                          <option value="04" ${student.class === '04' ? 'selected' : ''}>04</option>
+                          </select>
+                          </label>
+                          <br>    
+                          <label for="studentId">学号:</label>
+                          <input type="text" id="studentId" name="studentId" required value="${student.studentId}"><br>
+                          <label for="idNumber">身份证号:</label>
+                          <input type="text" id="idNumber" name="idNumber" required value="${student.idNumber}"><br>
+                          <label for="phone">电话:</label>
+                          <input type="text" id="phone" name="phone" required value="${student.phone}"><br>
+                          <label for="username">用户名:</label>
+                          <input type="text" id="username" name="username" required value=${student.studentId}><br>
+                          <label for="password">密码:</label>
+                          <input type="password" id="password" name="password" required value=${student.password}><br>                          
+                          <button type="submit">修改</button>
+                          <button type="button" id="deleteButton">删除</button>
+                          <button type="button" id="closeButton">返回</button>
+                          
+                      `;
+
+                  const closeButton = studentForm.querySelector('#closeButton');
+                  closeButton.addEventListener('click', () => {
+                    studentFormbackground.style.display = 'none'; // 隐藏按钮
+                    document.body.removeChild(studentForm); // 从 DOM 中移除表单
+                  });
+
+                  // 点击按钮时关闭它
+                  studentFormbackground.addEventListener('click', () => {
+                    studentFormbackground.style.display = 'none'; // 隐藏按钮
+                    document.body.removeChild(studentForm); // 从 DOM 中移除表单
+                  });
+
+                  const deleteButton = studentForm.querySelector('#deleteButton');
+                  deleteButton.addEventListener('click', () => {
+                    fetch(`http://localhost:3000/deletestumessage/${student.studentId}`, {
+                      method: 'DELETE'
+                    })
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                      })
+                      .then(data => {
+                        console.log('Success:', data);
+                        alert('删除成功!');
+                      })
+                      .catch((error) => {
+                        console.error('Error:', error);
+                        alert('Failed to delete student information.');
+                      });
+                  });
+
+                  studentForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // 阻止表单默认提交行为
+                    const formData = new FormData(studentForm);
+                    const updatedData = {};
+                    formData.forEach((value, key) => {
+                      updatedData[key] = value;
+                    });
+
+                    fetch(`http://localhost:3000/updatestumessage`, {
+                      method: 'PUT',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(updatedData)
+                    })
+                      .then(response => {
+                        console.log("响应状态：", response.status); // 查看状态码
+                        return response.text(); // 获取响应的原始文本
+                      })
+                      .then(data => {
+                        try {
+                          const jsonData = JSON.parse(data); // 尝试解析为 JSON
+                          console.log('Success:', jsonData);
+                          alert('更新成功！');
+                        } catch (error) {
+                          console.error('testtesttest');
+                          console.error('解析失败:', error);
+                          console.error('响应内容:', data); // 打印出原始响应内容
+                          alert('更新失败！');
+                        }
+                      })
+                      .catch(error => {
+                        console.error('Error:', error);
+                        alert('更新失败！');
+                      });
+                  });
+                  document.body.appendChild(studentForm);
+
+                });
+                studentTableBody.appendChild(row);
+              });
+            })
+            .catch(error => {
+              console.error('获取学生信息失败:', error);
+            });
+
+          // 添加学生按钮点击事件
+          document.getElementById('add-student-btn').addEventListener('click', () => {
+            // 检查是否已经存在表单
+            const existingForm = document.querySelector('form');
+            if (existingForm) {
+              document.body.removeChild(existingForm);
+            }
+
+            const studentForm = document.createElement('form');
+            studentForm.className = 'form-container'; // 添加类名以应用样式
+            studentFormbackground.style.display = 'block';
+
+            studentForm.style.zIndex = '10000'; // 确保表单位于按钮上方
+            studentForm.innerHTML = `
+                        <label for="name">姓名:</label>
+                        <input type="text" id="name" name="name" required style="width = 20px"><br>
+                        <label for="gender">性别:</label>
+                        <div class="radio-group">
+                          <label>
+                            <input type="radio" name="gender" value="男" required> 男
+                            <input type="radio" name="gender" value="女" required> 女
+                          </label>
+                        </div>
+                        <label for="class">班级:
+                        <select id="add-stu-class" name="class" required>
+                          <option value="01">01</option>
+                          <option value="02">02</option>
+                          <option value="03">03</option>
+                          <option value="04">04</option>
+                        </select>
+                        </label>
+                        <br>
+                        <label for="studentId">学号:</label>
+                        <input type="text" id="studentId" name="studentId" required><br>
+                        <label for="idNumber">身份证号:</label>
+                        <input type="text" id="idNumber" name="idNumber" required><br>
+                        <label for="phone">电话:</label>
+                        <input type="text" id="phone" name="phone" required><br>
+                        <label for="username">用户名:</label>
+                        <input type="text" id="username" name="username" required><br>
+                        <label for="password">密码:</label>
+                        <input type="password" id="password" name="password" required><br>
+                        <button type="submit">提交</button>
+                        <button type="button" id="closeButton">取消</button>
+                    `;
+
+            const closeButton = studentForm.querySelector('#closeButton');
+            closeButton.addEventListener('click', () => {
+              studentFormbackground.style.display = 'none'; // 隐藏按钮
+              document.body.removeChild(studentForm); // 从 DOM 中移除表单
+            });
+
+            // 点击按钮时关闭它
+            studentFormbackground.addEventListener('click', () => {
+              studentFormbackground.style.display = 'none'; // 隐藏按钮
+              document.body.removeChild(studentForm); // 从 DOM 中移除表单
+            });
+
+            studentForm.addEventListener('submit', (event) => {
+              event.preventDefault(); // 阻止表单默认提交行为
+              const formData = new FormData(studentForm);
+              const studentData = {};
+              formData.forEach((value, key) => {
+                studentData[key] = value;
+              });
+
+              fetch('http://localhost:3000/newstumessage', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentData)
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('学生信息添加成功:', data);
+                  studentFormbackground.style.display = 'none'; // 隐藏按钮
+                  document.body.removeChild(studentForm);
+                  alert('学生信息提交成功！');
+
+                })
+                .catch(error => {
+                  console.error('添加学生信息失败:', error);
+                  alert('学生信息提交失败，请重试！');
+                });
+            });
+            document.body.appendChild(studentForm);
+          });
+
+        }
+
+        else if (target === 'comment') {
+          // 重置所有元素为隐藏
+          init_hide_all();
+
+
+          // 显示评论信息表格和标题
+          document.getElementById('comment-title').style.display = 'block';
+          document.getElementById('comment-table').style.display = 'table'; // 表格使用table
+          document.getElementById('searchcommentInput').style.display = 'block'; // 搜索框显示表
+
+          // 获取评论信息并展示
+          fetch('http://localhost:3000/getcommentmessage')
+            .then(response => response.json())
+            .then(data => {
+              const commentTableBody = document.getElementById('comment-table').getElementsByTagName('tbody')[0];
+              commentTableBody.innerHTML = ''; // 清空之前的内容
+              data.forEach(comment => {
+                const row = document.createElement('tr');
+                // 使用Date对象解析created_at字段
+                const createdAt = new Date(comment.created_at);
+                // 格式化日期和时间
+                const formattedDate = createdAt.toLocaleString();
+                row.innerHTML = `
+        <td>${comment.id}</td>
+        <td>${comment.item_name}</td>
+        <td>${comment.comment}</td>
+        <td>${formattedDate}</td>
+        <td>
+          <button class="edit-btn" data-id="${comment.id}">删除</button>
+        </td>
+      `;
+                commentTableBody.appendChild(row);
+                // 获取“删除”按钮中的数据
+                row.querySelector('.edit-btn').addEventListener('click', function () {
+                  const commentId = this.getAttribute('data-id'); // 获取评论ID
+                  console.log(commentId);
+                  //按照评论id删除评论
+                  // 发送DELETE请求删除评论
+                  fetch(`http://localhost:3000/deletecomment`, {
+                    method: 'DELETE',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ commentId }),
+                  })
+                    .then(response => {
+                      if (response.ok) {
+                        alert('评论已删除');
+                        // 删除成功后，从表格中移除对应的行
+                        row.remove();
+                      } else {
+                        throw new Error('删除评论失败');
+                      }
+                    })
+                    .catch(error => {
+                      console.error('删除评论失败:', error);
+                      alert('删除评论失败');
+                    })
+
+                });
+              });
+            })
+            .catch(error => {
+              console.error('获取评论信息失败:', error);
+            });
+        }
+        else if (target === 'order') {
+          // 重置所有元素为隐藏
+          init_hide_all();
+          // 显示订单信息表格和标题
+          document.getElementById('order-title').style.display = 'block';
+          document.getElementById('order-table').style.display = 'table'; // 表格使用table
+
+          // 获取菜品id和菜品名作为表中前两个元素
+
+          fetch('http://localhost:3000/getdishmessage')
+            .then(response => response.json())
+            .then(async data => {
+              const dishTableBody = document.getElementById('order-table').getElementsByTagName('tbody')[0];
+              dishTableBody.innerHTML = ''; // 清空之前的内容
+              for (let dish of data) {
+                const row = document.createElement('tr');
+                const result_1 = await getdishcountresult(getCurrentDate(1), dish.id);
+                // console.log(getdishcountresult(getCurrentDate(1), dish.id));
+                console.log(result_1);
+                //剩下六天
+                var result_2 = await getdishcountresult(getCurrentDate(2), dish.id);
+                var result_3 = await getdishcountresult(getCurrentDate(3), dish.id);
+                var result_4 = await getdishcountresult(getCurrentDate(4), dish.id);
+                var result_5 = await getdishcountresult(getCurrentDate(5), dish.id);
+                var result_6 = await getdishcountresult(getCurrentDate(6), dish.id);
+                var result_7 = await getdishcountresult(getCurrentDate(7), dish.id);
+                var total_result = result_1 + result_2 + result_3 + result_4 + result_5 + result_6 + result_7;
+
+                row.innerHTML = `
+        <td>${dish.id}</td>
+        <td>${dish.name}</td>
+        <td>${result_1}</td>
+        <td>${result_2}</td>
+        <td>${result_3}</td>
+        <td>${result_4}</td>
+        <td>${result_5}</td>
+        <td>${result_6}</td>
+        <td>${result_7}</td>
+        <td>${total_result}</td>
+      `;
+                dishTableBody.appendChild(row);
+              }
+            })
+            .catch(error => {
+              console.error('获取菜品信息失败:', error);
+            });
+
+
+
+        }
+      });
+    }); 
+  </script>
+  <script>
+    var result = 0;
+
+    // 获取统计菜品数量的函数
+    async function getdishcountresult(str, id) {
+      try {
+        // 使用countorderStrings/:str/:id路由获取count结果
+        const response = await fetch(`http://localhost:3000/countorderStrings/${str}/${id}`);
+        const data = await response.json();
+        result = data.count;
+        // console.log(result);
+        return result;
+      } catch (error) {
+        console.error('获取菜品信息失败:', error);
+        return result;
+      }
+    }
+
+
+
+
+
+  </script>
+</body>
+
+</html>

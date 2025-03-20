@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理员页面</title>
+  <link rel="stylesheet" href="manager.css">
+  <style>
+    /* 样式可以在这里添加 */
+  </style>
+</head>
+
+<body>
+
+  <div class="navbar"></div>
+  <div class="main-content">
+    <div class="sidebar">
+      <a href="#" class="student-info">学生信息</a>
+      <a href="#" class="dish-info">菜品信息</a>
+      <a href="#" class="complaint-suggestion">投诉与建议</a>
+    </div>
+    <div class="header">
+      <span>个人中心</span>
+      <div class="dropdown">
+        <a href="#" id="logout">退出账号</a>
+        <a href="#" id="change-password">修改密码</a>
+      </div>
+    </div>
+
+    <div class="container" id="content-container">
+      <h1 id="student-title">学生信息管理</h1>
+      <table id="student-table">
+        <thead>
+          <tr>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>班级</th>
+            <th>学号</th>
+            <th>身份证号</th>
+            <th>电话</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 这里将通过 JavaScript 动态添加学生信息 -->
+        </tbody>
+      </table>
+      <a href="#" class="add-btn" id="add-student-btn">添加学生</a>
+
+      <!-- 菜品信息表格 -->
+      <h1 id="dish-title">菜品信息管理</h1>
+      <table id="dish-table">
+        <thead>
+          <tr>
+            <th>菜品名称</th>
+            <th>分类</th>
+            <th>价格</th>
+            <th>库存</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 这里将通过 JavaScript 动态添加菜品信息 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    // 获取学生信息并展示
+    fetch('http://localhost:3000/getstumessage')
+      .then(response => response.json())
+      .then(data => {
+        const studentTableBody = document.getElementById('student-table').getElementsByTagName('tbody')[0];
+        data.forEach(student => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.class}</td>
+                        <td>${student.studentId}</td>
+                        <td>${student.idNumber}</td>
+                        <td>${student.phone}</td>
+                        <td>
+                            <button class="edit-btn" data-id="${student.id}">编辑</button>
+                            <button class="delete-btn" data-id="${student.id}">删除</button>
+                        </td>
+                    `;
+          studentTableBody.appendChild(row);
+        });
+      })
+      .catch(error => {
+        console.error('获取学生信息失败:', error);
+      });
+
+    // 添加学生按钮点击事件
+    document.getElementById('add-student-btn').addEventListener('click', () => {
+      // 检查是否已经存在表单
+      const existingForm = document.querySelector('form');
+      if (existingForm) {
+        document.body.removeChild(existingForm);
+      }
+
+      const studentForm = document.createElement('form');
+      studentForm.innerHTML = `
+                <label for="name">姓名:</label>
+                <input type="text" id="name" name="name" required><br>
+                <label for="gender">性别:</label>
+                <div class="radio-group">
+                  <label>
+                    <input type="radio" name="gender" value="男" required> 男
+                    <input type="radio" name="gender" value="女" required> 女
+                  </label>
+                </div>
+                <label for="class">班级:</label>
+                <select id="class" name="class" required>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                </select><br>
+                <label for="studentId">学号:</label>
+                <input type="text" id="studentId" name="studentId" required><br>
+                <label for="idNumber">身份证号:</label>
+                <input type="text" id="idNumber" name="idNumber" required><br>
+                <label for="phone">电话:</label>
+                <input type="text" id="phone" name="phone" required><br>
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username" required><br>
+                <label for="password">密码:</label>
+                <input type="password" id="password" name="password" required><br>
+                <button type="submit">提交</button>
+            `;
+
+      studentForm.addEventListener('submit', (event) => {
+        event.preventDefault(); // 阻止表单默认提交行为
+        const formData = new FormData(studentForm);
+        const studentData = {};
+        formData.forEach((value, key) => {
+          studentData[key] = value;
+        });
+
+        fetch('http://localhost:3000/newstumessage', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(studentData)
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log('学生信息添加成功:', data);
+            document.body.removeChild(studentForm);
+            alert('学生信息提交成功！');
+          })
+          .catch(error => {
+            console.error('添加学生信息失败:', error);
+            alert('学生信息提交失败，请重试！');
+          });
+      });
+
+      document.body.appendChild(studentForm);
+    });
+
+    // 个人中心功能
+    document.getElementById('logout').addEventListener('click', function () {
+      window.location.href = 'rootlogin.html';
+    });
+
+    document.getElementById('change-password').addEventListener('click', function () {
+      alert('暂不支持修改');
+    });
+
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', function (event) {
+        event.preventDefault(); // 阻止链接默认跳转行为
+        const target = this.getAttribute('class').split('-')[0]; // 获取链接的目标内容
+        console.log(link); // 这将在控制台中打印出每个链接
+        console.log(target);
+        // 重置所有元素为隐藏
+        document.getElementById('student-table').style.display = 'none';
+        document.getElementById('dish-title').style.display = 'none';
+        document.getElementById('dish-table').style.display = 'none';
+        document.getElementById('add-student-btn').style.display = 'none';
+        document.getElementById('student-title').style.display = 'none';
+
+        if (target === 'dish') {
+          console.log("菜品信息表已展示"); // 在控制台输出信息
+          // 显示菜品信息表格和标题
+          document.getElementById('dish-title').style.display = 'block';
+          document.getElementById('dish-table').style.display = 'table'; // 表格使用table
+
+          // 获取菜品信息并展示
+          fetch('http://localhost:3000/getdishmessage')
+            .then(response => response.json())
+            .then(data => {
+              const dishTableBody = document.getElementById('dish-table').getElementsByTagName('tbody')[0];
+              dishTableBody.innerHTML = ''; // 清空之前的内容
+              data.forEach(dish => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${dish.dishName}</td>
+                <td>${dish.category}</td>
+                <td>${dish.price}</td>
+                <td>${dish.stock}</td>
+                <td>
+                    <button class="edit-btn" data-id="${dish.id}">编辑</button>
+                    <button class="delete-btn" data-id="${dish.id}">删除</button>
+                </td>
+            `;
+                dishTableBody.appendChild(row);
+              });
+            })
+            .catch(error => {
+              console.error('获取菜品信息失败:', error);
+            });
+        } else if (target === 'student') {
+          // 显示学生信息表格
+          document.getElementById('student-table').style.display = 'table';
+          document.getElementById('add-student-btn').style.display = 'block';
+          document.getElementById('student-title').style.display = 'block';
+
+          // 清空之前的学生信息表格内容
+          const dishTableBody = document.getElementById('student-table').getElementsByTagName('tbody')[0];
+          dishTableBody.innerHTML = ''; // 清空之前的内容
+
+          // 获取学生信息并展示
+          fetch('http://localhost:3000/getstumessage')
+            .then(response => response.json())
+            .then(data => {
+              const studentTableBody = document.getElementById('student-table').getElementsByTagName('tbody')[0];
+              data.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${student.name}</td>
+                        <td>${student.gender}</td>
+                        <td>${student.class}</td>
+                        <td>${student.studentId}</td>
+                        <td>${student.idNumber}</td>
+                        <td>${student.phone}</td>
+                        <td>
+                            <button class="edit-btn" data-id="${student.id}">编辑</button>
+                            <button class="delete-btn" data-id="${student.id}">删除</button>
+                        </td>
+                    `;
+                studentTableBody.appendChild(row);
+              });
+            })
+            .catch(error => {
+              console.error('获取学生信息失败:', error);
+            });
+          // 添加学生按钮点击事件
+          document.getElementById('add-student-btn').addEventListener('click', () => {
+            // 检查是否已经存在表单
+            const existingForm = document.querySelector('form');
+            if (existingForm) {
+              document.body.removeChild(existingForm);
+            }
+
+            const studentForm = document.createElement('form');
+            studentForm.innerHTML = `
+                <label for="name">姓名:</label>
+                <input type="text" id="name" name="name" required><br>
+                <label for="gender">性别:</label>
+                <div class="radio-group">
+                  <label>
+                    <input type="radio" name="gender" value="男" required> 男
+                    <input type="radio" name="gender" value="女" required> 女
+                  </label>
+                </div>
+                <label for="class">班级:</label>
+                <select id="class" name="class" required>
+                  <option value="01">01</option>
+                  <option value="02">02</option>
+                  <option value="03">03</option>
+                  <option value="04">04</option>
+                </select><br>
+                <label for="studentId">学号:</label>
+                <input type="text" id="studentId" name="studentId" required><br>
+                <label for="idNumber">身份证号:</label>
+                <input type="text" id="idNumber" name="idNumber" required><br>
+                <label for="phone">电话:</label>
+                <input type="text" id="phone" name="phone" required><br>
+                <label for="username">用户名:</label>
+                <input type="text" id="username" name="username" required><br>
+                <label for="password">密码:</label>
+                <input type="password" id="password" name="password" required><br>
+                <button type="submit">提交</button>
+            `;
+
+            studentForm.addEventListener('submit', (event) => {
+              event.preventDefault(); // 阻止表单默认提交行为
+              const formData = new FormData(studentForm);
+              const studentData = {};
+              formData.forEach((value, key) => {
+                studentData[key] = value;
+              });
+
+              fetch('http://localhost:3000/newstumessage', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(studentData)
+              })
+                .then(response => response.json())
+                .then(data => {
+                  console.log('学生信息添加成功:', data);
+                  document.body.removeChild(studentForm);
+                  alert('学生信息提交成功！');
+                })
+                .catch(error => {
+                  console.error('添加学生信息失败:', error);
+                  alert('学生信息提交失败，请重试！');
+                });
+            });
+
+            document.body.appendChild(studentForm);
+
+          });
+
+        }
+
+      });
+    });
+  </script>
+</body>
+
+</html>

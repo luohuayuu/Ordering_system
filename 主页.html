@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>点餐预约系统</title>
+    <style>
+        /* 全局样式 */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        nav {
+            background-color: #343a40;
+            color: white;
+            width: 250px;
+            padding: 1rem;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 50px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        nav h2 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        nav button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        nav button:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        nav .logout {
+            background-color: #dc3545;
+            font-weight: bold;
+        }
+
+        nav .logout:hover {
+            background-color: #b52a3a;
+        }
+
+        main {
+            flex: 1;
+            margin-left: 270px;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .avatar img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .avatar button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .avatar button:hover {
+            background-color: #218838;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>点餐预约系统</h1>
+</header>
+<div class="container">
+    <nav>
+        <button class="logout" onclick="logout()">退出账号</button>
+        <h2>功能栏</h2>
+        <button onclick="jump()">菜单查看与预订</button>
+        <button onclick="navigateTo('orders.html')">订单管理</button>
+        <button onclick="navigateTo('server.html')">投诉与建议</button>
+    </nav>
+    <main>
+        <div class="avatar">
+            <img id="user-avatar" src="./avatar-placeholder.png" alt="用户头像">
+            <button onclick="changeAvatar()">更改头像</button>
+            <input type="file" id="avatar-upload" style="display: none;" accept="image/*" onchange="previewAvatar(event)">
+        </div>
+        <h2>欢迎来到点餐预约系统！</h2>
+        <section id="profile">
+            <h3>个人信息</h3>
+            <p id="name">学号: </p>
+            <p id="student-id">姓名: </p>
+        </section>
+    </main>
+</div>
+<footer>
+    <p>&copy; 2024 点餐预约系统</p>
+</footer>
+<script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const studentId = urlParams.get('username');
+
+    console.log(studentId);  // 检查 studentId 的值
+
+     fetch(`http://localhost:3000/getstumessage/${studentId}`)
+    .then(response => {
+        if (!response.ok) {
+            return Promise.reject(new Error('Network response was not ok ' + response.statusText));
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+        document.getElementById('student-id').textContent = `学号: ${data.studentId}`;
+        document.getElementById('name').textContent = `姓名: ${data.name}`;
+        alert('获取信息成功');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('获取信息失败');
+    });
+        function jump() {
+            window.location.href = `menu.html?username=${encodeURIComponent(studentId)}`;
+        }
+
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+
+        function logout() {
+            const confirmLogout = confirm("您确定要退出账号吗？");
+            if (confirmLogout) {
+                alert("您已退出账号！");
+                sessionStorage.clear(); // 清除 sessionStorage 中存储的数据
+                window.location.href = 'login.html'; // 跳转到登录页面
+            }
+        }
+
+        function changeAvatar() {
+            document.getElementById('avatar-upload').click();
+        }
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('user-avatar').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 在页面加载时更新用户信息
+        updateProfile();
+</script>
+</body>
+</html>

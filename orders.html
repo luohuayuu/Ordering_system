@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单管理</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .container {
+            margin: 2rem auto;
+            padding: 1rem;
+            max-width: 800px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-item {
+            border-bottom: 1px solid #ddd;
+            padding: 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-details {
+            flex: 1;
+        }
+
+        .order-details p {
+            margin: 0.3rem 0;
+        }
+
+        .cancel-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background-color: #b52a3a;
+        }
+
+        .no-orders {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #777;
+        }
+
+        #menu {
+            float: left;
+            width: 20%;
+            background-color: #f0f0f0;
+            padding: 10px;
+        }
+
+        #orders {
+            float: left;
+            width: 80%;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>订单管理</h1>
+        <button onclick="window.location.href='主页.html'">返回主页</button>
+    </header>
+        <div id="orders">
+
+        </div>
+
+    <script>
+        
+        window.onload = async function () {
+            await fetchOrder();
+        };
+
+        async function cancelOrder(orderId) {
+
+            console.log('Attempting to cancel order with ID:', orderId);
+            if (!orderId) {
+                throw new Error('Order ID not found');
+            }
+
+            const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const orderItem = document.getElementById(`order-${orderId}`);
+                if (orderItem) {
+                    orderItem.remove();
+                    const orders = document.getElementById('orders');
+                    if (orders.children.length === 0) {
+                        orders.innerHTML = '<p class="no-orders">暂无订单。</p>';
+                    }
+                    alert("订单已取消！");
+                    location.reload();
+                } else {
+
+                    alert("订单已取消！");
+                    location.reload();
+                }
+            } else {
+                const errorText = await response.text();
+                throw new Error(`取消订单失败: ${errorText}`);
+            }
+
+        }
+
+
+        async function fetchOrder() {
+            const response = await fetch('http://localhost:3000/api/orders');
+            const orders = await response.json();
+            // 使用Intl.DateTimeFormat对象来格式化日期时间
+            const dateTimeFormat = new Intl.DateTimeFormat('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Asia/Shanghai' // 设置为中国的时区
+            });
+            const orderDiv = document.getElementById('orders');
+            orders.forEach(order => {
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.id = `order-${order.id}`; // 为每个订单项添加一个唯一的ID
+                orderItem.dataset.id = order.id;
+                const formattedDateTime = dateTimeFormat.format(new Date(order.created_at));
+                orderItem.innerHTML = `
+                <p><strong>用户ID:</strong> ${order.user_id}</p>
+                    <p><strong>订单ID:</strong> ${order.id}</p>
+                    <p><strong>菜品名称:</strong> ${order.item_name}</p>
+                    <p><strong>餐品ID:</strong> ${order.item_id}</p>
+                      <p><strong>订单时间:</strong> ${formattedDateTime}</p>
+                    <p><strong>期望时间:</strong> ${order.times}</p>
+                    <button class="cancel-btn" onclick="cancelOrder(${order.id})">取消订单</button>
+                `;
+                orderDiv.appendChild(orderItem);
+            });
+        }
+    </script>
+</body>
+
+</html>

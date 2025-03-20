@@ -1,0 +1,46 @@
+if (target === 'dish') {
+
+          console.log("菜品信息表已展示"); // 在控制台输出信息
+          // 显示菜品信息表格和标题
+          document.getElementById('dish-title').style.display = 'block';
+          document.getElementById('dish-table').style.display = 'table'; // 表格使用table
+
+          // 获取菜品信息并展示
+          fetch('http://localhost:3000/getdishmessage')
+            .then(response => response.json())
+            .then(data => {
+              const dishTableBody = document.getElementById('dish-table').getElementsByTagName('tbody')[0];
+              dishTableBody.innerHTML = ''; // 清空之前的内容
+              data.forEach(dish => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                <td>${dish.name}</td>
+                <td>${dish.cuisine}</td>
+                <td>${dish.price}</td>
+                <td>
+                    <button class="edit-btn" data-id="${dish.image}">查看图片</button>
+
+                </td>
+            `;
+                dishTableBody.appendChild(row);
+                // 获取“查看图片”按钮中的数据
+                row.querySelector('.edit-btn').addEventListener('click', function () {
+                  const dishId = this.getAttribute('data-id'); // 获取菜品ID
+                  console.log(dishId);
+                  window.open(dishId, '_blank'); // 打开一个新的浏览器窗口或标签页
+
+                });
+              });
+            })
+            .catch(error => {
+              console.error('获取菜品信息失败:', error);
+            });
+          // 为查看图片按钮添加点击事件监听器
+          document.querySelectorAll('.view-image-btn').forEach(button => {
+            button.addEventListener('click', (event) => {
+              event.preventDefault(); // 阻止默认行为
+              const imageUrl = button.getAttribute('data-image');
+              window.open(imageUrl, '_blank'); // 打开一个新的浏览器窗口或标签页
+            });
+          });
+        }
